@@ -2,6 +2,7 @@
 <widget id="com.salen.kandzapp" version="1.0.0"
         xmlns="http://www.w3.org/ns/widgets"
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
+
     <name>KANDZApp</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -9,16 +10,17 @@
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
         Apache Cordova Team
     </author>
+
     <content src="index.html" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
 
-    <!-- SQLite plugin -->
-    <plugin name="cordova-sqlite-storage" spec="~7.0.0" />
-
-    <!-- Android platform preferences -->
+    <!-- --- Android SDK Settings --- -->
     <preference name="android-minSdkVersion" value="21" />
-    <preference name="android-targetSdkVersion" value="33" />
-    <preference name="DisallowOverscroll" value="true" />
-    <preference name="BackupWebStorage" value="none" />
+    <preference name="android-compileSdkVersion" value="35" />
+    <preference name="android-targetSdkVersion" value="35" />
+
+    <!-- --- Ensure SQLite plugin is included --- -->
+    <plugin name="cordova-sqlite-storage" spec="7.0.0" />
+
 </widget>
