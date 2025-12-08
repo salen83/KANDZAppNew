@@ -12,12 +12,13 @@ nav button.active { background:#16a085; }
 .screen { display:none; padding:10px; overflow-x:auto; }
 .screen table { border-collapse: collapse; width: 100%; }
 .screen table, .screen th, .screen td { border: 1px solid #444; }
-th, td { padding:5px; text-align:center; min-width:50px; }
+th, td { padding:5px; text-align:center; min-width:60px; }
 input { width: 100%; box-sizing: border-box; border:none; }
 input:focus { outline: 1px solid #16a085; }
-button.action { margin:5px 0; padding:5px 10px; cursor:pointer; }
+button.action { margin:5px 6px; padding:6px 10px; cursor:pointer; }
 .row-btn { margin-left:5px; cursor:pointer; color:red; }
 .small { font-size:0.9rem; padding:4px 6px; }
+.container { padding:10px; }
 </style>
 </head>
 <body>
@@ -25,49 +26,69 @@ button.action { margin:5px 0; padding:5px 10px; cursor:pointer; }
   <button class="tab-btn active" data-target="screen1">Rezultati</button>
   <button class="tab-btn" data-target="screen2">Statistika</button>
   <button class="tab-btn" data-target="screen3">Budući mečevi</button>
+  <button class="tab-btn" data-target="screen4">Predikcija</button>
+  <button class="tab-btn" data-target="screen5">TOP 50</button>
 </nav>
 
-<div id="screen1" class="screen" style="display:block;">
-  <h2>Rezultati završenih mečeva</h2>
-  <button class="action small" onclick="addResultRow()">Dodaj red</button>
-  <button class="action small" onclick="clearResultsTable()">Obriši sve (rezultati)</button>
-  <table id="resultsTable">
-    <thead>
-      <tr><th>Domacin</th><th>Gost</th><th>Ukupan rezultat</th><th>2H</th><th>1H</th><th>Obriši</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+<div class="container">
+  <div id="screen1" class="screen" style="display:block;">
+    <h2>Rezultati završenih mečeva</h2>
+    <button class="action small" onclick="addResultRow()">Dodaj red</button>
+    <button class="action small" onclick="clearResultsTable()">Obriši sve (rezultati)</button>
+    <table id="resultsTable">
+      <thead><tr><th>Domacin</th><th>Gost</th><th>Rezultat</th><th>2H</th><th>1H</th><th>Obriši</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-<div id="screen2" class="screen">
-  <h2>Statistika</h2>
-  <button class="action small" onclick="updateStats()">Osveži statistiku</button>
-  <button class="action small" onclick="clearStatsTable()">Obriši statistiku</button>
-  <table id="statsTable">
-    <thead>
-      <tr>
-        <th>Tim</th><th>Odigrano</th><th>Golovi dati</th><th>Golovi primljeni</th>
-        <th>GG</th><th>2+</th><th>%GG</th><th>%2+</th><th>NG</th><th>%NG</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+  <div id="screen2" class="screen">
+    <h2>Statistika</h2>
+    <button class="action small" onclick="updateStats()">Osveži statistiku</button>
+    <button class="action small" onclick="clearStatsTable()">Obriši prikaz statistike</button>
+    <table id="statsTable">
+      <thead>
+        <tr><th>Tim</th><th>Odigrano</th><th>Golovi dati</th><th>Golovi primljeni</th>
+        <th>GG</th><th>2+</th><th>%GG</th><th>%2+</th><th>NG</th><th>%NG</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-<div id="screen3" class="screen">
-  <h2>Budući mečevi</h2>
-  <button class="action small" onclick="addFutureRow()">Dodaj red</button>
-  <button class="action small" onclick="clearFutureTable()">Obriši sve (future)</button>
-  <table id="futureTable">
-    <thead>
-      <tr><th>Domacin</th><th>Gost</th><th>Obriši</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="screen3" class="screen">
+    <h2>Budući mečevi</h2>
+    <button class="action small" onclick="addFutureRow()">Dodaj red</button>
+    <button class="action small" onclick="clearFutureTable()">Obriši sve (future)</button>
+    <table id="futureTable">
+      <thead><tr><th>Domacin</th><th>Gost</th><th>Obriši</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="screen4" class="screen">
+    <h2>Predikcija (GG / NG / 2+)</h2>
+    <button class="action small" onclick="updatePredictionsUI()">Osveži predikcije</button>
+    <table id="predictionTable">
+      <thead><tr><th>Domacin</th><th>Gost</th><th>GG %</th><th>NG %</th><th>2+ %</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="screen5" class="screen">
+    <h2>TOP 50 mečeva</h2>
+    <div style="margin-bottom:8px;">
+      <button class="action small" onclick="updateTop50UI('gg')">Top GG</button>
+      <button class="action small" onclick="updateTop50UI('ng')">Top NG</button>
+      <button class="action small" onclick="updateTop50UI('twoPlus')">Top 2+</button>
+    </div>
+    <table id="top50Table">
+      <thead><tr><th>Domacin</th><th>Gost</th><th>GG %</th><th>NG %</th><th>2+ %</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
-// UI: tabs
+// Tabs UI
 const tabs = document.querySelectorAll('.tab-btn');
 const screens = document.querySelectorAll('.screen');
 tabs.forEach(tab => tab.addEventListener('click', () => {
