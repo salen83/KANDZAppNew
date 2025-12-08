@@ -17,6 +17,7 @@ input { width: 100%; box-sizing: border-box; border:none; }
 input:focus { outline: 1px solid #16a085; }
 button.action { margin:5px 0; padding:5px 10px; cursor:pointer; }
 .row-btn { margin-left:5px; cursor:pointer; color:red; }
+.small { font-size:0.9rem; padding:4px 6px; }
 </style>
 </head>
 <body>
@@ -24,14 +25,12 @@ button.action { margin:5px 0; padding:5px 10px; cursor:pointer; }
   <button class="tab-btn active" data-target="screen1">Rezultati</button>
   <button class="tab-btn" data-target="screen2">Statistika</button>
   <button class="tab-btn" data-target="screen3">Budući mečevi</button>
-  <button class="tab-btn" data-target="screen4">Verovatnoća</button>
-  <button class="tab-btn" data-target="screen5">TOP 50</button>
 </nav>
 
 <div id="screen1" class="screen" style="display:block;">
-  <h2>Rezultati zavrsenih mečeva</h2>
-  <button class="action" onclick="addResultRow()">Dodaj red</button>
-  <button class="action" onclick="clearTable('resultsTable')">Obriši sve</button>
+  <h2>Rezultati završenih mečeva</h2>
+  <button class="action small" onclick="addResultRow()">Dodaj red</button>
+  <button class="action small" onclick="clearResultsTable()">Obriši sve (rezultati)</button>
   <table id="resultsTable">
     <thead>
       <tr><th>Domacin</th><th>Gost</th><th>Ukupan rezultat</th><th>2H</th><th>1H</th><th>Obriši</th></tr>
@@ -42,20 +41,23 @@ button.action { margin:5px 0; padding:5px 10px; cursor:pointer; }
 
 <div id="screen2" class="screen">
   <h2>Statistika</h2>
-  <button class="action" onclick="updateStats()">Osveži statistiku</button>
-  <button class="action" onclick="clearTable('statsTable')">Obriši sve</button>
+  <button class="action small" onclick="updateStats()">Osveži statistiku</button>
+  <button class="action small" onclick="clearStatsTable()">Obriši statistiku</button>
   <table id="statsTable">
     <thead>
-      <tr><th>Tim</th><th>Odigrano</th><th>Golovi dati</th><th>Golovi primljeni</th><th>GG</th><th>2+</th><th>%GG</th><th>%2+</th><th>NG</th><th>%NG</th></tr>
+      <tr>
+        <th>Tim</th><th>Odigrano</th><th>Golovi dati</th><th>Golovi primljeni</th>
+        <th>GG</th><th>2+</th><th>%GG</th><th>%2+</th><th>NG</th><th>%NG</th>
+      </tr>
     </thead>
     <tbody></tbody>
   </table>
 </div>
 
 <div id="screen3" class="screen">
-  <h2>Unos budućih mečeva</h2>
-  <button class="action" onclick="addFutureRow()">Dodaj red</button>
-  <button class="action" onclick="clearTable('futureTable')">Obriši sve</button>
+  <h2>Budući mečevi</h2>
+  <button class="action small" onclick="addFutureRow()">Dodaj red</button>
+  <button class="action small" onclick="clearFutureTable()">Obriši sve (future)</button>
   <table id="futureTable">
     <thead>
       <tr><th>Domacin</th><th>Gost</th><th>Obriši</th></tr>
@@ -64,79 +66,16 @@ button.action { margin:5px 0; padding:5px 10px; cursor:pointer; }
   </table>
 </div>
 
-<div id="screen4" class="screen">
-  <h2>Verovatnoća ishoda</h2>
-  <button class="action" onclick="updatePredictions()">Izračunaj verovatnoću</button>
-  <button class="action" onclick="clearTable('predictionTable')">Obriši sve</button>
-  <table id="predictionTable">
-    <thead>
-      <tr><th>Domacin</th><th>Gost</th><th>GG %</th><th>NG %</th><th>2+ %</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<div id="screen5" class="screen">
-  <h2>TOP 50 mečeva</h2>
-  <button class="action" onclick="updateTop50()">Generiši TOP 50</button>
-  <button class="action" onclick="clearTable('top50Table')">Obriši sve</button>
-  <table id="top50Table">
-    <thead>
-      <tr><th>Domacin</th><th>Gost</th><th>GG %</th><th>NG %</th><th>2+ %</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
 <script>
-const tabs=document.querySelectorAll('.tab-btn');
-const screens=document.querySelectorAll('.screen');
-tabs.forEach(tab=>tab.addEventListener('click',()=>{
-  tabs.forEach(t=>t.classList.remove('active'));
+// UI: tabs
+const tabs = document.querySelectorAll('.tab-btn');
+const screens = document.querySelectorAll('.screen');
+tabs.forEach(tab => tab.addEventListener('click', () => {
+  tabs.forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
-  const target=tab.dataset.target;
-  screens.forEach(screen=>screen.style.display=(screen.id===target)?'block':'none');
+  const target = tab.dataset.target;
+  screens.forEach(s => s.style.display = (s.id === target) ? 'block' : 'none');
 }));
-
-function addResultRow(){addRow('resultsTable',5,true);}
-function addFutureRow(){addRow('futureTable',2,false);}
-function addRow(tableId,cols,saveRow){
-  const tbody=document.getElementById(tableId).querySelector('tbody');
-  const row=document.createElement('tr');
-  for(let i=0;i<cols;i++){
-    const td=document.createElement('td');
-    const input=document.createElement('input');
-    td.appendChild(input);
-    row.appendChild(td);
-  }
-  const delTd=document.createElement('td');
-  const delBtn=document.createElement('span');
-  delBtn.innerText='X';
-  delBtn.className='row-btn';
-  delBtn.onclick=()=>{
-    row.remove();
-    if(tableId==='resultsTable') deleteResultRow(row);
-    if(tableId==='futureTable') deleteFutureRow(row);
-  };
-  delTd.appendChild(delBtn);
-  row.appendChild(delTd);
-  tbody.appendChild(row);
-
-  if(saveRow && tableId==='resultsTable'){
-    const inputs=row.querySelectorAll('input');
-    saveResultRow(inputs[0].value,inputs[1].value,inputs[2].value,inputs[3].value,inputs[4].value);
-    inputs.forEach(input=>input.addEventListener('change',()=>saveResultRow(inputs[0].value,inputs[1].value,inputs[2].value,inputs[3].value,inputs[4].value)));
-  }
-  if(!saveRow && tableId==='futureTable'){
-    const inputs=row.querySelectorAll('input');
-    inputs.forEach(input=>input.addEventListener('change',()=>saveFutureRow(inputs[0].value,inputs[1].value)));
-  }
-}
-
-function clearTable(tableId){
-  const tbody=document.getElementById(tableId).querySelector('tbody');
-  tbody.innerHTML='';
-}
 </script>
 
 <script src="js/sqlite.js"></script>
